@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Session 4: Project 1</title>
+    <style>
+        * {
+            margin: 0px;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            font-size: .8em;
+            background-color: white;
+            color: #444;
+            /* change this to ddd later */
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: darkblue;
+        }
+
+        p {
+            text-indent: 10px;
+        }
+
+        abbr {
+            font-style: italic;
+            font-weight: bold;
+            color: darkgreen;
+        }
+
+        a {
+            text-decoration: none;
+            color: green;
+            font-size: 1.2em;
+            /* NOT SURE IF IT WAS A TYPE IN THE ASSIGNMENT TO MAKE THE SIZE 1.2PX SO I MADE IT 1.2EM */
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: darkgreen;
+        }
+
+        header {
+            display: grid;
+            grid-template-columns: auto auto;
+            padding: 1em 0;
+        }
+
+        .title {
+            text-align: left;
+        }
+
+        .date {
+            text-align: right;
+        }
+
+        #menu {
+            text-align: center;
+        }
+
+        #menu>ul>li {
+            display: inline;
+            border-right: solid black 1px;
+            padding: 0 1em;
+        }
+
+        #menu>ul>li:nth-last-child(1) {
+            border: none;
+        }
+
+        #content-area {
+            margin: 1em 3em;
+            height: 10em;
+            overflow: scroll;
+        }
+
+        footer {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <div class="title">
+                <h1>Some Title</h1>
+            </div>
+            <div class="date">
+                <h3 id="date"></h3>
+            </div>
+        </header>
+
+        <nav id="menu">
+            <ul>
+                <li><a class="button" name="item1">Link1</a></li>
+                <li><a class="button" name="item2">Link2</a></li>
+                <li><a class="button" name="item3">Link3</a></li>
+                <li><a class="button" name="item4">Link4</a></li>
+                <li><a class="button" name="item5">Link5</a></li>
+            </ul>
+        </nav>
+
+        <main id="content-area">
+        </main>
+
+        <footer>
+            <h4>&copy 2018 Oscar Villalta</h4>
+        </footer>
+
+    </div>
+
+    <script>
+
+        const App = class App {
+            constructor(data, content){
+                this.data = data;
+                this.content = content;
+            };
+
+            getId(id) {
+                if(document.getElementById){
+                    return document.getElementById(id);
+                } else {
+                    return document.all[id];
+                }
+            };
+
+            getClass(cl) {
+                if(document.getElementsByClassName){
+                    return document.getElementsByClassName(cl);
+                } else {
+                    return document.all[cl];
+                }
+            };
+
+            addEvent(className) {
+                for(let i = 0; i < className.length; i++){
+                    className[i].addEventListener("click", e => this.showDoc(e), false);
+                }
+            };
+
+            loadDoc(fn, cb) {
+                let ajax;
+                if (window.XMLHttpRequest) {
+                    ajax = new XMLHttpRequest();
+                } else {
+                    ajax = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+
+                ajax.onreadystatechange = () => {
+                    if(ajax.readyState == 4 && ajax.status == 200){
+                        const res = JSON.parse(ajax.responseText);
+                        return cb(res);
+                        
+                    }
+                }
+
+                ajax.open("GET", fn, true);
+                //ajax.setRequestHeader("Content-type", "text/html");
+                ajax.send(null);
+
+            };
+
+            showDoc(e) {
+                const name = e.target.name;
+                for (let i = 0; i < this.data.length; i++){
+                    if(this.data[i].linkTitle == name){
+                        this.setContent(this.data[i].content);
+                    }
+                }
+                this.getId("content-area").innerHTML = this.content;
+                console.log(this.content);
+
+            };
+
+            setData(data){
+                this.data = data;
+            }
+
+            setContent(content){
+                this.content = content;
+            }
+
+            getDate() {
+                const date = new Date();
+                return date;
+            };
+        }
+
+        let data = "";
+        let content = "";
+
+        let inst = new App(data, content);
+        let date = inst.getDate();
+        let cl = inst.getClass("button");
+        inst.addEvent(cl);
+        inst.loadDoc("data.json", res => {
+            inst.setData(res);
+        });
+
+
+    </script>
+
+</body>
+
+</html>
